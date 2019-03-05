@@ -12,14 +12,14 @@ function trimEmptyHash(url) {
 
 /**
  * ! This is a private undocumented service !
- *
+ * 这是一个没有正式文档的私有服务
  * @name $browser
  * @requires $log
  * @description
- * This object has two goals:
+ * This object has two goals: 这个对象有两个目的
  *
- * - hide all the global state in the browser caused by the window object
- * - abstract away all the browser specific features and inconsistencies
+ * - hide all the global state in the browser caused by the window object 隐藏所有window对象关联的浏览器公共状态
+ * - abstract away all the browser specific features and inconsistencies 将所有种类的浏览器的特点和不一致之处抽象出来
  *
  * For tests we provide {@link ngMock.$browser mock implementation} of the `$browser`
  * service, which can be used for convenient testing of the application without the interaction with

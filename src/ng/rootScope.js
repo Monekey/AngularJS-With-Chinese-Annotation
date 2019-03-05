@@ -1091,14 +1091,17 @@ function $RootScopeProvider() {
        *
        * @description
        * Executes the expression on the current scope at a later point in time.
+       * 在以后的某个时刻，在当前scope作用域下执行表达式
        *
        * The `$evalAsync` makes no guarantees as to when the `expression` will be executed, only
        * that:
        *
        *   - it will execute after the function that scheduled the evaluation (preferably before DOM
        *     rendering).
+       *     不知道怎么翻译了
        *   - at least one {@link ng.$rootScope.Scope#$digest $digest cycle} will be performed after
        *     `expression` execution.
+       *     至少有一个脏检查生命周期在$evalAsync表达式之后被执行
        *
        * Any exceptions from the execution of the expression are forwarded to the
        * {@link ng.$exceptionHandler $exceptionHandler} service.
@@ -1117,6 +1120,7 @@ function $RootScopeProvider() {
       $evalAsync: function(expr, locals) {
         // if we are outside of an $digest loop and this is the first time we are scheduling async
         // task also schedule async auto-flush
+        // 在脏检查队列末尾添加表达式，如果当前在脏检查循环外则启动一个脏检查循环
         if (!$rootScope.$$phase && !asyncQueue.length) {
           $browser.defer(function() {
             if (asyncQueue.length) {

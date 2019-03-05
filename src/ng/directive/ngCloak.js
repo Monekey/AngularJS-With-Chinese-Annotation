@@ -52,6 +52,7 @@
    </example>
  *
  */
+//由于特殊的处理机制，可以理解为隐式的restrict: AC
 var ngCloakDirective = ngDirective({
   compile: function(element, attr) {
     attr.$set('ngCloak', undefined);

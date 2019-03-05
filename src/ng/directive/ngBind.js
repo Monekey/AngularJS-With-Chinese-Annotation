@@ -9,6 +9,7 @@
  * The `ngBind` attribute tells AngularJS to replace the text content of the specified HTML element
  * with the value of a given expression, and to update the text content when the value of that
  * expression changes.
+ * ngBind属性告诉AngularJS使用给定的表达式替换指定的HTML元素的文字内容，并且当表达式变化时文字内容也会更新。
  *
  * Typically, you don't use `ngBind` directly, but instead you use the double curly markup like
  * `{{ expression }}` which is similar but less verbose.
@@ -16,8 +17,10 @@
  * It is preferable to use `ngBind` instead of `{{ expression }}` if a template is momentarily
  * displayed by the browser in its raw state before AngularJS compiles it. Since `ngBind` is an
  * element attribute, it makes the bindings invisible to the user while the page is loading.
+ * 如果一个模板片段还没有被AngularJs编译之前，就被浏览前显示出来的话，使用ngBind代替{{}}更好一些.
+ * 由于ngBind是一个元素属性，绑定的数据在页面加载时对于用户是不可见的.
  *
- * An alternative solution to this problem would be using the
+ * An alternative solution to this problem would be using the 另外的一个解决方式是使用ngCloak指令(restrict: AC)
  * {@link ng.directive:ngCloak ngCloak} directive.
  *
  *
@@ -55,11 +58,11 @@ var ngBindDirective = ['$compile', function($compile) {
   return {
     restrict: 'AC',
     compile: function ngBindCompile(templateElement) {
-      $compile.$$addBindingClass(templateElement);
+      $compile.$$addBindingClass(templateElement); //仅供调试
       return function ngBindLink(scope, element, attr) {
-        $compile.$$addBindingInfo(element, attr.ngBind);
+        $compile.$$addBindingInfo(element, attr.ngBind); //仅供调试
         element = element[0];
-        scope.$watch(attr.ngBind, function ngBindWatchAction(value) {
+        scope.$watch(attr.ngBind, function ngBindWatchAction(value) {//本质也是一个watch
           element.textContent = stringify(value);
         });
       };
@@ -79,6 +82,7 @@ var ngBindDirective = ['$compile', function($compile) {
  * Unlike `ngBind`, the `ngBindTemplate` can contain multiple `{{` `}}`
  * expressions. This directive is needed since some HTML elements
  * (such as TITLE and OPTION) cannot contain SPAN elements.
+ * 不同于ngBind，ngBindTemplate能包含多个{{}}表达式
  *
  * @element ANY
  * @param {string} ngBindTemplate template of form
@@ -146,13 +150,16 @@ var ngBindTemplateDirective = ['$interpolate', '$compile', function($interpolate
  * To utilize this functionality, ensure that `$sanitize` is available, for example, by including {@link
  * ngSanitize} in your module's dependencies (not in core AngularJS). In order to use {@link ngSanitize}
  * in your module's dependencies, you need to include "angular-sanitize.js" in your application.
+ * 依赖ngSanitize
  *
  * You may also bypass sanitization for values you know are safe. To do so, bind to
  * an explicitly trusted value via {@link ng.$sce#trustAsHtml $sce.trustAsHtml}.  See the example
  * under {@link ng.$sce#show-me-an-example-using-sce- Strict Contextual Escaping (SCE)}.
+ * 可以使用$sce.trustAsHtml方法绕过sanitization检查
  *
  * Note: If a `$sanitize` service is unavailable and the bound value isn't explicitly trusted, you
  * will have an exception (instead of an exploit.)
+ * 如果$sanitize服务不可用且绑定的值没有被信任（$sce.trustAsHtml），将抛出异常
  *
  * @element ANY
  * @param {expression} ngBindHtml {@link guide/expression Expression} to evaluate.

@@ -24,14 +24,15 @@ function nullFormRenameControl(control, name) {
  * @ngdoc type
  * @name form.FormController
  *
- * @property {boolean} $pristine True if user has not interacted with the form yet.
- * @property {boolean} $dirty True if user has already interacted with the form.
- * @property {boolean} $valid True if all of the containing forms and controls are valid.
- * @property {boolean} $invalid True if at least one containing control or form is invalid.
- * @property {boolean} $submitted True if user has submitted the form even if its invalid.
+ * @property {boolean} $pristine True if user has not interacted with the form yet. 无互动
+ * @property {boolean} $dirty True if user has already interacted with the form. 有互动
+ * @property {boolean} $valid True if all of the containing forms and controls are valid. 全部通过验证
+ * @property {boolean} $invalid True if at least one containing control or form is invalid. 含有未通过验证的元素
+ * @property {boolean} $submitted True if user has submitted the form even if its invalid. 被提交过的
  *
  * @property {Object} $pending An object hash, containing references to controls or forms with
  *  pending validators, where:
+ *  包含pending状态的异步验证(如请求后台查重登，详见指令ngModel.$asyncValidators)
  *
  *  - keys are validations tokens (error names).
  *  - values are arrays of controls or forms that have a pending validator for the given error name.
@@ -40,11 +41,12 @@ function nullFormRenameControl(control, name) {
  *
  * @property {Object} $error An object hash, containing references to controls or forms with failing
  *  validators, where:
+ *  包含未通过的验证
  *
  *  - keys are validation tokens (error names),
  *  - values are arrays of controls or forms that have a failing validator for the given error name.
  *
- *  Built-in validation tokens:
+ *  Built-in validation tokens: 內建的验证token
  *  - `email`
  *  - `max`
  *  - `maxlength`
@@ -63,9 +65,11 @@ function nullFormRenameControl(control, name) {
  * @description
  * `FormController` keeps track of all its controls and nested forms as well as the state of them,
  * such as being valid/invalid or dirty/pristine.
+ *  FormController对其控制的嵌套的表单状态的追踪，例如valid/invalid 、 dirty/pristine.
  *
  * Each {@link ng.directive:form form} directive creates an instance
  * of `FormController`.
+ * 所有ngForm会创建一个FormController的实例
  *
  */
 //asks for $scope to fool the BC controller module
@@ -98,6 +102,7 @@ FormController.prototype = {
    *
    * @description
    * Rollback all form controls pending updates to the `$modelValue`.
+   * 回滚
    *
    * Updates may be pending by a debounced event or because the input is waiting for a some future
    * event defined in `ng-model-options`. This method is typically needed by the reset button of
@@ -135,6 +140,7 @@ FormController.prototype = {
    * @description
    * Register a control with the form. Input elements using ngModelController do this automatically
    * when they are linked.
+   * 给form注册一个control. Input元素会使用ngModelController在link时自动执行此方法。
    *
    * Note that the current state of the control will not be reflected on the new parent form. This
    * is not an issue with normal use, as freshly compiled and linked controls are in a `$pristine`
@@ -388,11 +394,12 @@ addSetValidityMethod({
  * Specifically, you cannot submit `ngForm` like a `<form>` tag. That means,
  * you cannot send data to the server with `ngForm`, or integrate it with
  * {@link ng.directive:ngSubmit `ngSubmit`}.
+ * 注意：ngForm替换掉了內建的form标签.特别的，你必须使用ngSubmit指令提交ngForm.
  * </div>
  *
  * @param {string=} ngForm|name Name of the form. If specified, the form controller will
  *                              be published into the related scope, under this name.
- *
+ * ngForm会被注册到关联的controller的scope作用域的name属性值变量中。
  */
 
  /**
@@ -406,6 +413,7 @@ addSetValidityMethod({
  *
  * If the `name` attribute is specified, the form controller is published onto the current scope under
  * this name.
+ * ngForm会被注册到关联的controller的scope作用域的name属性值变量中。
  *
  * ## Alias: {@link ng.directive:ngForm `ngForm`}
  *
@@ -414,8 +422,9 @@ addSetValidityMethod({
  * AngularJS provides the {@link ng.directive:ngForm `ngForm`} directive, which behaves identically to
  * `form` but can be nested. Nested forms can be useful, for example, if the validity of a sub-group
  * of controls needs to be determined.
+ * AngularJS中，Form可以是嵌套的。
  *
- * ## CSS classes
+ * ## CSS classes  随属性变化的css类会被附加到form的class属性中
  *  - `ng-valid` is set if the form is valid.
  *  - `ng-invalid` is set if the form is invalid.
  *  - `ng-pending` is set if the form is pending.
@@ -424,7 +433,7 @@ addSetValidityMethod({
  *  - `ng-submitted` is set if the form was submitted.
  *
  * Keep in mind that ngAnimate can detect each of these classes when added and removed.
- *
+ * 紧记，ngAnimate模块可以察觉到这些所有的css类的添加或移除
  *
  * ## Submitting a form and preventing the default action
  *
@@ -432,19 +441,20 @@ addSetValidityMethod({
  * roundtrip apps, it is desirable for the browser not to translate the form submission into a full
  * page reload that sends the data to the server. Instead some javascript logic should be triggered
  * to handle the form submission in an application-specific way.
+ * 主要是说原生的form提交方式，会导致整个页面的重载，AngularJS阻止了这种默认的提交方式。
  *
  * For this reason, AngularJS prevents the default action (form submission to the server) unless the
  * `<form>` element has an `action` attribute specified.
  *
  * You can use one of the following two ways to specify what javascript method should be called when
- * a form is submitted:
+ * a form is submitted: 你可以使用以下两种方式，在提交表单时调用js方法。
  *
- * - {@link ng.directive:ngSubmit ngSubmit} directive on the form element
- * - {@link ng.directive:ngClick ngClick} directive on the first
-  *  button or input field of type submit (input[type=submit])
+ * - {@link ng.directive:ngSubmit ngSubmit} directive on the form element 在form标签
+ * - {@link ng.directive:ngClick ngClick} directive on the first 在第一个type=submit的input/button
+ *  button or input field of type submit (input[type=submit])
  *
  * To prevent double execution of the handler, use only one of the {@link ng.directive:ngSubmit ngSubmit}
- * or {@link ng.directive:ngClick ngClick} directives.
+ * or {@link ng.directive:ngClick ngClick} directives. 为了避免冲突，两种方式不要同时使用
  * This is because of the following form submission rules in the HTML specification:
  *
  * - If a form has only one input field then hitting enter in this field triggers form submit
@@ -454,6 +464,7 @@ addSetValidityMethod({
  * - if a form has one or more input fields and one or more buttons or input[type=submit] then
  * hitting enter in any of the input fields will trigger the click handler on the *first* button or
  * input[type=submit] (`ngClick`) *and* a submit handler on the enclosing form (`ngSubmit`)
+ * 以上在将有两个以上的submit按钮时，浏览器的应对情况，有兴趣可以看看
  *
  * Any pending `ngModelOptions` changes will take place immediately when an enclosing form is
  * submitted. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
@@ -465,7 +476,7 @@ addSetValidityMethod({
  * other validations that are performed within the form. Animations in ngForm are similar to how
  * they work in ngClass and animations can be hooked into using CSS transitions, keyframes as well
  * as JS animations.
- *
+ * 重写內建的css类
  * The following example shows a simple way to utilize CSS transitions to style a form element
  * that has been rendered as invalid after it has been validated:
  *
@@ -544,7 +555,7 @@ var formDirectiveFactory = function(isNgForm) {
       require: ['form', '^^?form'], //first is the form's own ctrl, second is an optional parent form
       controller: FormController,
       compile: function ngFormCompile(formElement, attr) {
-        // Setup initial state of the control
+        // Setup initial state of the control 初始化添加两个css类
         formElement.addClass(PRISTINE_CLASS).addClass(VALID_CLASS);
 
         var nameAttr = attr.name ? 'name' : (isNgForm && attr.ngForm ? 'ngForm' : false);
@@ -574,6 +585,7 @@ var formDirectiveFactory = function(isNgForm) {
 
               // unregister the preventDefault listener so that we don't not leak memory but in a
               // way that will achieve the prevention of the default action.
+              //及时解绑事件，防止内存泄漏。
               formElement.on('$destroy', function() {
                 $timeout(function() {
                   formElement[0].removeEventListener('submit', handleFormSubmission);

@@ -396,8 +396,8 @@ function extend(dst) {
 * sinceVersion="1.6.5"
 * This function is deprecated, but will not be removed in the 1.x lifecycle.
 * There are edge cases (see {@link angular.merge#known-issues known issues}) that are not
-* supported by this function. We suggest using another, similar library for all-purpose merging,
-* such as [lodash's merge()](https://lodash.com/docs/4.17.4#merge).
+* supported by this function. We suggest
+* using [lodash's merge()](https://lodash.com/docs/4.17.4#merge) instead.
 *
 * @knownIssue
 * This is a list of (known) object types that are not handled correctly by this function:
@@ -405,8 +405,6 @@ function extend(dst) {
 * - [`MediaStream`](https://developer.mozilla.org/docs/Web/API/MediaStream)
 * - [`CanvasGradient`](https://developer.mozilla.org/docs/Web/API/CanvasGradient)
 * - AngularJS {@link $rootScope.Scope scopes};
-*
-* `angular.merge` also does not support merging objects with circular references.
 *
 * @param {Object} dst Destination object.
 * @param {...Object} src Source object(s).
@@ -785,9 +783,7 @@ function arrayRemove(array, value) {
  * @kind function
  *
  * @description
- * Creates a deep copy of `source`, which should be an object or an array. This functions is used
- * internally, mostly in the change-detection code. It is not intended as an all-purpose copy
- * function, and has several limitations (see below).
+ * Creates a deep copy of `source`, which should be an object or an array.
  *
  * * If no destination is supplied, a copy of the object or array is created.
  * * If a destination is provided, all of its elements (for arrays) or properties (for objects)
@@ -801,25 +797,6 @@ function arrayRemove(array, value) {
  *   Only enumerable properties are taken into account. Non-enumerable properties (both on `source`
  *   and on `destination`) will be ignored.
  * </div>
- *
- * <div class="alert alert-warning">
- *   `angular.copy` does not check if destination and source are of the same type. It's the
- *   developer's responsibility to make sure they are compatible.
- * </div>
- *
- * @knownIssue
- * This is a non-exhaustive list of object types / features that are not handled correctly by
- * `angular.copy`. Note that since this functions is used by the change detection code, this
- * means binding or watching objects of these types (or that include these types) might not work
- * correctly.
- * - [`File`](https://developer.mozilla.org/docs/Web/API/File)
- * - [`Map`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)
- * - [`ImageData`](https://developer.mozilla.org/docs/Web/API/ImageData)
- * - [`MediaStream`](https://developer.mozilla.org/docs/Web/API/MediaStream)
- * - [`Set`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)
- * - [`WeakMap`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
- * - ['getter'](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/
- *   [`setter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)`
  *
  * @param {*} source The source that will be used to make a copy. Can be any type, including
  *     primitives, `null`, and `undefined`.

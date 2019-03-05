@@ -8,8 +8,10 @@
  * @description
  * Modifies the default behavior of the html a tag so that the default action is prevented when
  * the href attribute is empty.
+ * 修改a标签默认的偏好，当href属性为空时，行为将被阻止
  *
  * For dynamically creating `href` attributes for a tags, see the {@link ng.ngHref `ngHref`} directive.
+ * 为了动态的创建a标签的href属性，详见ngHref指令
  */
 var htmlAnchorDirective = valueFn({
   restrict: 'E',

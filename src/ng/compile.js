@@ -1764,7 +1764,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *
    * @kind function
    *
-   * @description
+   * @description 这个标识使你可以通过angular.element获取Dom节点的scope，同时还会添加一堆东西，以便调试。
    * Call this method to enable/disable various debug runtime information in the compiler such as adding
    * binding information and a reference to the current scope on to DOM elements.
    * If enabled, the compiler will add the following to DOM elements that have been bound to the scope
@@ -1779,7 +1779,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * You may want to disable this in production for a significant performance boost. See
    * {@link guide/production#disabling-debug-data Disabling Debug Data} for more.
    *
-   * The default value is true.
+   * The default value is true. 默认值为true
    */
   var debugInfoEnabled = true;
   this.debugInfoEnabled = function(enabled) {
@@ -2272,6 +2272,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * The observer function will be invoked once during the next `$digest` following
        * compilation. The observer is then invoked whenever the interpolated value
        * changes.
+       *  观察者函数在下一个脏检查过程中被执行一次。
+       *  观察者在插值发生变化时执行。
        *
        * @param {string} key Normalized key. (ie ngAttribute) .
        * @param {function(interpolatedValue)} fn Function that will be called whenever
@@ -2289,6 +2291,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         $rootScope.$evalAsync(function() {
           if (!listeners.$$inter && attrs.hasOwnProperty(key) && !isUndefined(attrs[key])) {
             // no one registered attribute interpolation function, so lets call it manually
+            // 属性没有插值时，需手动调用
             fn(attrs[key]);
           }
         });
@@ -3837,7 +3840,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             pre: function ngPropPreLinkFn(scope, $element) {
               function applyPropValue() {
                 var propValue = ngPropGetter(scope);
-                $element[0][propName] = sanitizer(propValue);
+                $element.prop(propName, sanitizer(propValue));
               }
 
               applyPropValue();
@@ -3863,6 +3866,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var interpolateFn = $interpolate(value, mustHaveExpression, trustedContext, allOrNothing);
 
       // no interpolation found -> ignore
+      // 没有插值 -> 直接return
       if (!interpolateFn) return;
 
       if (name === 'multiple' && nodeName === 'select') {

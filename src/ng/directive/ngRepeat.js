@@ -530,7 +530,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
           var index, length,
-              previousNode = $element[0],     // node that cloned nodes should be inserted after
+              0 = $element[0],     // node that cloned nodes should be inserted after
                                               // initialized to the comment node anchor
               nextNode,
               // Same as lastBlockMap but it has the current state. It will become the

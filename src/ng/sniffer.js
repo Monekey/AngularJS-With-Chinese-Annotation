@@ -4,6 +4,7 @@
 
 /**
  * !!! This is an undocumented "private" service !!!
+ * ！！！这是一个非正式的“私有”服务！！！
  *
  * @name $sniffer
  * @requires $window
@@ -16,6 +17,7 @@
  *
  * @description
  * This is very simple implementation of testing browser's features.
+ * 这是一个用来测试浏览器特性的非常简单的接口
  */
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {

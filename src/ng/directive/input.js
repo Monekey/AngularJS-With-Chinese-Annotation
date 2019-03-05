@@ -46,14 +46,14 @@ var inputType = {
    *
    * @description
    * Standard HTML text input with AngularJS data binding, inherited by most of the `input` elements.
+   * 标准的AngularJs数据绑定Input标签，大多数继承自原生Input
    *
-   *
-   * @param {string} ngModel Assignable AngularJS expression to data-bind to.
-   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string} ngModel Assignable AngularJS expression to data-bind to. ngModel双向绑定
+   * @param {string=} name Property name of the form under which the control is published. name属性会以变量形式注册到form control中
    * @param {string=} required Adds `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
-   *    `required` when you want to data-bind to the `required` attribute.
+   *    `required` when you want to data-bind to the `required` attribute. 需要使用数据绑定控制required时，请使用ngRequired
    * @param {number=} ngMinlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
    * @param {number=} ngMaxlength Sets `maxlength` validation error key if the value is longer than
@@ -348,7 +348,7 @@ var inputType = {
 
   /**
    * @ngdoc input
-   * @name input[time]
+     * @name input[time]
    *
    * @description
    * Input with time validation and transformation. In browsers that do not yet support
@@ -909,10 +909,8 @@ var inputType = {
    *
    * <div class="alert alert-warning">
    * **Note:** `input[email]` uses a regex to validate email addresses that is derived from the regex
-   * used in Chromium, which may not fulfill your app's requirements.
-   * If you need stricter (e.g. requiring a top-level domain), or more relaxed validation
-   * (e.g. allowing IPv6 address literals) you can use `ng-pattern` or
-   * modify the built-in validators (see the {@link guide/forms Forms guide}).
+   * used in Chromium. If you need stricter validation (e.g. requiring a top-level domain), you can
+   * use `ng-pattern` or modify the built-in validators (see the {@link guide/forms Forms guide})
    * </div>
    *
    * @param {string} ngModel Assignable AngularJS expression to data-bind to.
@@ -1287,12 +1285,12 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
   stringBasedInputType(ctrl);
 }
-
+//所有input的基类
 function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var type = lowercase(element[0].type);
 
-  // In composition mode, users are still inputting intermediate text buffer,
-  // hold the listener until composition is done.
+  // In composition mode, users are still inputting intermediate text buffer, 在使用了输入法的情况下，用户将在一个缓存区输入字符
+  // hold the listener until composition is done. 持续监听直到输入结束
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
   if (!$sniffer.android) {
     var composing = false;
@@ -1380,9 +1378,9 @@ function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   element.on('change', listener);
 
   // Some native input types (date-family) have the ability to change validity without
-  // firing any input/change events.
+  // firing any input/change events. 有些原生input类型可以在不触发input/change事件的情况下改变
   // For these event types, when native validators are present and the browser supports the type,
-  // check for validity changes on various DOM events.
+  // check for validity changes on various DOM events. 为此，当浏览器支持这些类型时，我们需要使用不同的DOM事件监听变化。
   if (PARTIAL_VALIDATION_TYPES[type] && ctrl.$$hasNativeValidators && type === attr.type) {
     element.on(PARTIAL_VALIDATION_EVENTS, /** @this */ function(ev) {
       if (!timeout) {
@@ -2225,7 +2223,7 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
     require: ['?ngModel'],
     link: {
       pre: function(scope, element, attr, ctrls) {
-        if (ctrls[0]) {
+        if (ctrls[0]) {//注意，只有在input使用了ngModel指令时，才会让AngularJs扩展原生的input.因此在一个没有ngModel的input中设置一些原生没有的type时，是不生效的.
           (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrls[0], $sniffer,
                                                               $browser, $filter, $parse);
         }

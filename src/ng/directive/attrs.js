@@ -13,13 +13,14 @@
  * value. Until AngularJS replaces the markup the link will be broken
  * and will most likely return a 404 error. The `ngHref` directive
  * solves this problem.
- *
- * The wrong way to write it:
+ * 在href属性中使用AngularJs插值标记（'{{hash}}'），如果用户在AngularJs编辑替换差值内容前点击了该链接，将会链接到错误的URL。
+ * 链接会是挂掉的并且大概率会返回404错误。ngHref指令解决了此问题
+ * The wrong way to write it: 错误的写法：
  * ```html
  * <a href="http://www.gravatar.com/avatar/{{hash}}">link1</a>
  * ```
  *
- * The correct way to write it:
+ * The correct way to write it:正确的写法：
  * ```html
  * <a ng-href="http://www.gravatar.com/avatar/{{hash}}">link1</a>
  * ```
@@ -165,7 +166,7 @@
  *
  * A special directive is necessary because we cannot use interpolation inside the `disabled`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
- *
+ * 一个特殊的指令不能被差值代替属性值。
  * @example
     <example name="ng-disabled">
       <file name="index.html">
@@ -181,6 +182,7 @@
       </file>
     </example>
  *
+ * @element INPUT
  * @param {expression} ngDisabled If the {@link guide/expression expression} is truthy,
  *     then the `disabled` attribute will be set on the element
  */
@@ -197,10 +199,10 @@
  *
  * Note that this directive should not be used together with {@link ngModel `ngModel`},
  * as this can lead to unexpected behavior.
- *
+ * 这个指令不应该和ngModel一起使用，会产生非期望的结果
  * A special directive is necessary because we cannot use interpolation inside the `checked`
  * attribute. See the {@link guide/interpolation interpolation guide} for more info.
- *
+ * 一个特殊的指令不能被差值代替属性值。
  * @example
     <example name="ng-checked">
       <file name="index.html">
@@ -354,6 +356,7 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   if (propName === 'multiple') return;
 
   function defaultLinkFn(scope, element, attr) {
+    //可以看到这类指令的本质就是在scope上添加一个watch，当ng前缀的指令插值发生变化时，更新原生的属性值。
     scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
       attr.$set(attrName, !!value);
     });
@@ -365,7 +368,8 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
   if (propName === 'checked') {
     linkFn = function(scope, element, attr) {
       // ensuring ngChecked doesn't interfere with ngModel when both are set on the same input
-      if (attr.ngModel !== attr[normalized]) {
+      // 当ngChecked和ngModel设置在同一个input中时，确保不发生冲突
+      if (attr.ngModel !== attr[normalized]) {//ngModel存在时，ngChecked直接不生效
         defaultLinkFn(scope, element, attr);
       }
     };
@@ -388,6 +392,7 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
       link: function(scope, element, attr) {
         //special case ngPattern when a literal regular expression value
         //is used as the expression (this way we don't have to watch anything).
+        //正则指令不需要watch
         if (ngAttr === 'ngPattern' && attr.ngPattern.charAt(0) === '/') {
           var match = attr.ngPattern.match(REGEX_STRING_REGEXP);
           if (match) {
@@ -396,6 +401,7 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
           }
         }
 
+        //本质同样是watch
         scope.$watch(attr[ngAttr], function ngAttrAliasWatchAction(value) {
           attr.$set(ngAttr, value);
         });
@@ -423,8 +429,10 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
 
         // We need to sanitize the url at least once, in case it is a constant
         // non-interpolated attribute.
+        // 安全性因素，需要使用$sce服务处理url
         attr.$set(normalized, $sce.getTrustedMediaUrl(attr[normalized]));
 
+        //由于属性值包含插值，所以使用$observe方法监听变化
         attr.$observe(normalized, function(value) {
           if (!value) {
             if (attrName === 'href') {
